@@ -1,0 +1,15 @@
+/* Импорты */
+@import '../vendors/normalize.css';
+@import '../vendors/fonts.css';
+
+/* Блоки */
+@import '../blocks/page/page.css';
+@import '../blocks/header/header.css';
+@import '../blocks/content/content.css';
+@import '../blocks/footer/footer.css';
+@import '../blocks/profile/profile.css';
+@import '../blocks/places/places.css';
+@import '../blocks/card/card.css';
+@import '../blocks/popup/popup.css';
+@import '../blocks/popup/_is-animated/popup_is-animated.css';
+@import '../blocks/popup/_is-opened/popup_is-opened.css';
