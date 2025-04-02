@@ -3,26 +3,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './src/scripts/index.js',  // Обновленный путь
+  entry: './src/scripts/index.js',
   output: {
+    filename: 'main.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js',
     publicPath: ''
   },
-  mode: 'development',
-  devServer: {
-    static: path.resolve(__dirname, './dist'),
-    compress: true,
-    port: 8080,
-    open: true,
-    hot: true,
-  },
+  mode: 'production',
+  devtool: 'source-map',
   module: {
     rules: [
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: '/node_modules/',
+        exclude: '/node_modules/'
       },
       {
         test: /\.css$/,
@@ -30,43 +24,28 @@ module.exports = {
           'style-loader',
           {
             loader: 'css-loader',
-            options: { importLoaders: 1 },
+            options: { importLoaders: 1 }
           },
-          'postcss-loader',
-        ],
+          'postcss-loader'
+        ]
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif|woff(2)?|eot|ttf|otf)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/[hash][ext][query]',
-        },
-      },
-    ],
+        test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
+        type: 'asset/resource'
+      }
+    ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: './src/index.html'
     }),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin()
   ],
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
-    runtimeChunk: 'single',
-  },
-  resolve: {
-    extensions: ['.js'],
-    alias: {
-      '@': path.resolve(__dirname, 'src')  // Добавьте алиас для удобства
-    }
+  devServer: {
+    static: path.resolve(__dirname, './dist'),
+    compress: true,
+    port: 8080,
+    open: true,
+    hot: true
   }
 };
