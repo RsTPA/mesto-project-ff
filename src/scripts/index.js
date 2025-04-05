@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import { deleteCard, createCard, handleLikeButton } from './card.js';
-import { openModal as showPopup, closeModal as hidePopup } from './modal.js';
+import { openModal, closeModal } from './modal.js';  // Убраны алиасы
 import { initialCards } from './cards.js';
 
 // DOM элементы
@@ -45,14 +45,14 @@ function handleImageClick(cardData) {
     modalImageElement.src = cardData.link;
     modalImageElement.alt = cardData.name;
     modalCaptionElement.textContent = cardData.name;
-    showPopup(imagePreviewModal);
+    openModal(imagePreviewModal);  // Использовано прямое имя функции
 }
 
 function handleFormEditProfileSubmit(evt) {
     evt.preventDefault();
     profileNameElement.textContent = profileNameInput.value;
     profileJobElement.textContent = profileJobInput.value;
-    hidePopup(editProfileModal);
+    closeModal(editProfileModal);  // Использовано прямое имя функции
 }
 
 function handleFormNewPlaceSubmit(evt) {
@@ -65,7 +65,7 @@ function handleFormNewPlaceSubmit(evt) {
     );
     cardsContainer.prepend(newCard);
     cardForm.reset();
-    hidePopup(addCardModal);
+    closeModal(addCardModal);  // Использовано прямое имя функции
 }
 
 function setupEventListeners() {
@@ -73,16 +73,19 @@ function setupEventListeners() {
     editProfileButton.addEventListener('click', () => {
         profileNameInput.value = profileNameElement.textContent;
         profileJobInput.value = profileJobElement.textContent;
-        showPopup(editProfileModal);
+        openModal(editProfileModal);  // Использовано прямое имя функции
     });
 
-    addCardButton.addEventListener('click', () => showPopup(addCardModal));
+    addCardButton.addEventListener('click', () => openModal(addCardModal));  // Использовано прямое имя функции
 
-    // Закрытие модальных окон
+    // Упрощенный обработчик закрытия модальных окон
     document.querySelectorAll('.popup').forEach(popup => {
+        const closeButton = popup.querySelector('.popup__close');
+        closeButton.addEventListener('click', () => closeModal(popup));
+        
         popup.addEventListener('click', (evt) => {
-            if (evt.target === popup || evt.target.classList.contains('popup__close')) {
-                hidePopup(popup);
+            if (evt.target === popup) {
+                closeModal(popup);
             }
         });
     });
