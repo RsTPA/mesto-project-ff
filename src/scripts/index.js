@@ -1,74 +1,101 @@
-import './pages/index.css';
-import Card from '../components/Card.js';
-import FormValidator from '../components/FormValidator.js';
-import Modal from '../components/Modal.js';
-import Section from '../components/Section.js';
-import UserInfo from '../components/UserInfo.js';
-import { initialCards, validationConfig } from '../utils/constants.js';
+import '../pages/index.css';
+import { deleteCard, createCard, handleLikeButton } from './card.js';
+import { openModal as showPopup, closeModal as hidePopup } from './modal.js';
+import { initialCards } from './cards.js';
 
-// Инициализация модальных окон
-const editProfileModal = new Modal('.modal_type_edit');
-const addCardModal = new Modal('.modal_type_add');
-const imageModal = new Modal('.modal_type_image');
+// DOM элементы
+const cardsContainer = document.querySelector('.places__list');
+const profileSection = document.querySelector('.profile');
+const profileNameElement = profileSection.querySelector('.profile__title');
+const profileJobElement = profileSection.querySelector('.profile__description');
 
-// Инициализация валидации форм
-const editFormValidator = new FormValidator(validationConfig, document.forms['edit-profile']);
-const addCardFormValidator = new FormValidator(validationConfig, document.forms['add-place']);
+// Кнопки
+const editProfileButton = profileSection.querySelector('.profile__edit-button');
+const addCardButton = profileSection.querySelector('.profile__add-button');
 
-// Инициализация секции с карточками
-const cardSection = new Section({
-  items: initialCards,
-  renderer: (item) => {
-    const card = new Card(item, '#card-template', (name, link) => {
-      document.querySelector('.modal__image').src = link;
-      document.querySelector('.modal__image').alt = name;
-      document.querySelector('.modal__caption').textContent = name;
-      imageModal.open();
+// Модальные окна
+const editProfileModal = document.querySelector('.popup_type_edit');
+const addCardModal = document.querySelector('.popup_type_new-card');
+const imagePreviewModal = document.querySelector('.popup_type_image');
+
+// Элементы модальных окон
+const modalImageElement = imagePreviewModal.querySelector('.popup__image');
+const modalCaptionElement = imagePreviewModal.querySelector('.popup__caption');
+
+// Формы
+const profileForm = document.forms['edit-profile'];
+const cardForm = document.forms['new-place'];
+
+// Поля форм
+const profileNameInput = profileForm.querySelector('.popup__input_type_name');
+const profileJobInput = profileForm.querySelector('.popup__input_type_description');
+const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
+const cardLinkInput = cardForm.querySelector('.popup__input_type_url');
+
+// Инициализация карточек
+function renderInitialCards() {
+    initialCards.forEach(card => {
+        const newCard = createCard(card, deleteCard, handleLikeButton, handleImageClick);
+        cardsContainer.append(newCard);
     });
-    return card.generateCard();
-  }
-}, '.cards__list');
-
-// Инициализация информации о пользователе
-const userInfo = new UserInfo({
-  nameSelector: '.profile__title',
-  jobSelector: '.profile__description'
-});
+}
 
 // Обработчики событий
-document.querySelector('.profile__edit-button').addEventListener('click', () => {
-  const { name, job } = userInfo.getUserInfo();
-  document.querySelector('#name-input').value = name;
-  document.querySelector('#job-input').value = job;
-  editFormValidator.resetValidation();
-  editProfileModal.open();
-});
+function handleImageClick(cardData) {
+    modalImageElement.src = cardData.link;
+    modalImageElement.alt = cardData.name;
+    modalCaptionElement.textContent = cardData.name;
+    showPopup(imagePreviewModal);
+}
 
-document.querySelector('.profile__add-button').addEventListener('click', () => {
-  addCardFormValidator.resetValidation();
-  addCardModal.open();
-});
+function handleFormEditProfileSubmit(evt) {
+    evt.preventDefault();
+    profileNameElement.textContent = profileNameInput.value;
+    profileJobElement.textContent = profileJobInput.value;
+    hidePopup(editProfileModal);
+}
 
-document.forms['edit-profile'].addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  userInfo.setUserInfo({
-    name: document.querySelector('#name-input').value,
-    job: document.querySelector('#job-input').value
-  });
-  editProfileModal.close();
-});
+function handleFormNewPlaceSubmit(evt) {
+    evt.preventDefault();
+    const newCard = createCard(
+        { name: cardNameInput.value, link: cardLinkInput.value },
+        deleteCard,
+        handleLikeButton,
+        handleImageClick
+    );
+    cardsContainer.prepend(newCard);
+    cardForm.reset();
+    hidePopup(addCardModal);
+}
 
-document.forms['add-place'].addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  const name = document.querySelector('#place-name-input').value;
-  const link = document.querySelector('#place-link-input').value;
-  
-  cardSection.addItem({ name, link });
-  addCardModal.close();
-  evt.target.reset();
-});
+function setupEventListeners() {
+    // Открытие модальных окон
+    editProfileButton.addEventListener('click', () => {
+        profileNameInput.value = profileNameElement.textContent;
+        profileJobInput.value = profileJobElement.textContent;
+        showPopup(editProfileModal);
+    });
 
-// Инициализация
-editFormValidator.enableValidation();
-addCardFormValidator.enableValidation();
-cardSection.renderItems();
+    addCardButton.addEventListener('click', () => showPopup(addCardModal));
+
+    // Закрытие модальных окон
+    document.querySelectorAll('.popup').forEach(popup => {
+        popup.addEventListener('click', (evt) => {
+            if (evt.target === popup || evt.target.classList.contains('popup__close')) {
+                hidePopup(popup);
+            }
+        });
+    });
+
+    // Отправка форм
+    profileForm.addEventListener('submit', handleFormEditProfileSubmit);
+    cardForm.addEventListener('submit', handleFormNewPlaceSubmit);
+}
+
+// Инициализация приложения
+function init() {
+    renderInitialCards();
+    setupEventListeners();
+}
+
+init();
