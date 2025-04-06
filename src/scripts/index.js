@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import { deleteCard, createCard, handleLikeButton } from './card.js';
-import { openModal, closeModal } from './modal.js';  // Убраны алиасы
+import { openModal, closeModal } from './modal.js';
 import { initialCards } from './cards.js';
 
 // DOM элементы
@@ -45,14 +45,14 @@ function handleImageClick(cardData) {
     modalImageElement.src = cardData.link;
     modalImageElement.alt = cardData.name;
     modalCaptionElement.textContent = cardData.name;
-    openModal(imagePreviewModal);  // Использовано прямое имя функции
+    openModal(imagePreviewModal);
 }
 
 function handleFormEditProfileSubmit(evt) {
     evt.preventDefault();
     profileNameElement.textContent = profileNameInput.value;
     profileJobElement.textContent = profileJobInput.value;
-    closeModal(editProfileModal);  // Использовано прямое имя функции
+    closeModal(editProfileModal);
 }
 
 function handleFormNewPlaceSubmit(evt) {
@@ -65,7 +65,7 @@ function handleFormNewPlaceSubmit(evt) {
     );
     cardsContainer.prepend(newCard);
     cardForm.reset();
-    closeModal(addCardModal);  // Использовано прямое имя функции
+    closeModal(addCardModal);
 }
 
 function setupEventListeners() {
@@ -73,21 +73,15 @@ function setupEventListeners() {
     editProfileButton.addEventListener('click', () => {
         profileNameInput.value = profileNameElement.textContent;
         profileJobInput.value = profileJobElement.textContent;
-        openModal(editProfileModal);  // Использовано прямое имя функции
+        openModal(editProfileModal);
     });
 
-    addCardButton.addEventListener('click', () => openModal(addCardModal));  // Использовано прямое имя функции
+    addCardButton.addEventListener('click', () => openModal(addCardModal));
 
-    // Упрощенный обработчик закрытия модальных окон
-    document.querySelectorAll('.popup').forEach(popup => {
-        const closeButton = popup.querySelector('.popup__close');
+    // Обработчики кнопок закрытия
+    document.querySelectorAll('.popup__close').forEach(closeButton => {
+        const popup = closeButton.closest('.popup');
         closeButton.addEventListener('click', () => closeModal(popup));
-        
-        popup.addEventListener('click', (evt) => {
-            if (evt.target === popup) {
-                closeModal(popup);
-            }
-        });
     });
 
     // Отправка форм
