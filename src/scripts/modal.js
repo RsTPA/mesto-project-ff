@@ -1,24 +1,24 @@
-function handleEscapeKey(evt) {
-    if (evt.key === 'Escape') {
-      const openedPopup = document.querySelector('.popup_is-opened');
-      closeModal(openedPopup);
-    }
-  }
-  
-  function handleOverlayClick(evt) {
-    if (evt.target.classList.contains('popup')) {
-      closeModal(evt.target);
-    }
-  }
-  
-  export function openModal(popup) {
-    popup.classList.add('popup_is-opened');
+export function openModal(modal) {
+    modal.classList.add('popup_is-opened');
     document.addEventListener('keydown', handleEscapeKey);
-    popup.addEventListener('mousedown', handleOverlayClick);
   }
   
-  export function closeModal(popup) {
-    popup.classList.remove('popup_is-opened');
+  export function closeModal(modal) {
+    modal.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', handleEscapeKey);
-    popup.removeEventListener('mousedown', handleOverlayClick);
+  }
+  
+  export function handleOverlayClick(evt) {
+    if (evt.target === evt.currentTarget) {
+      closeModal(evt.currentTarget);
+    }
+  }
+  
+  function handleEscapeKey(evt) {
+    if (evt.key === 'Escape') {
+      const openedModal = document.querySelector('.popup_is-opened');
+      if (openedModal) {
+        closeModal(openedModal);
+      }
+    }
   }
