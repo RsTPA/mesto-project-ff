@@ -26,6 +26,7 @@ const checkNameValidity = (inputElement) => {
     if ((inputElement.name === 'name' || 
          inputElement.name === 'place-name' || 
          inputElement.name === 'description') && 
+        inputElement.value && 
         !checkNameValidity(inputElement)) {
       showInputError(formElement, inputElement, getCustomErrorMessage(inputElement), config);
       return false;

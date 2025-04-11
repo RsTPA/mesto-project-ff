@@ -1,28 +1,24 @@
-const openModal = (modal) => {
+export function openModal(modal) {
     modal.classList.add('popup_is-opened');
-    modal.addEventListener('mousedown', closeModalByOverlayClick);
-    document.addEventListener('keydown', closeModalByKey);
-};
-
-const closeModal = (modal) => {
+    document.addEventListener('keydown', handleEscapeKey);
+  }
+  
+  export function closeModal(modal) {
     modal.classList.remove('popup_is-opened');
-    modal.removeEventListener('mousedown', closeModalByOverlayClick);
-    document.removeEventListener('keydown', closeModalByKey);
-};
-
-const closeModalByOverlayClick = (event) => {
-    if (event.target === event.currentTarget) {
-        closeModal(event.currentTarget);
+    document.removeEventListener('keydown', handleEscapeKey);
+  }
+  
+  export function handleOverlayClick(evt) {
+    if (evt.target === evt.currentTarget) {
+      closeModal(evt.currentTarget);
     }
-};
-
-const closeModalByKey = (event) => {
-    if (event.key === 'Escape') {
-        const modal = document.querySelector('.popup_is-opened');
-        if (modal) {
-            closeModal(modal);
-        }
+  }
+  
+  function handleEscapeKey(evt) {
+    if (evt.key === 'Escape') {
+      const openedModal = document.querySelector('.popup_is-opened');
+      if (openedModal) {
+        closeModal(openedModal);
+      }
     }
-};
-
-export { openModal, closeModal };
+  }
