@@ -1,3 +1,11 @@
+import { deleteCard as deleteCardApi } from './api.js';
+import { openModal, closeModal } from './modal.js';
+
+// Элементы попапа подтверждения
+const confirmPopup = document.querySelector('.popup_type_confirm');
+const confirmForm = confirmPopup.querySelector('.popup__form');
+
+
 export function createCard(cardData, userId, handleDeleteCard, handleLikeCard, handleImageClick) {
     const cardTemplate = document.querySelector('#card-template').content;
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -36,4 +44,44 @@ export function createCard(cardData, userId, handleDeleteCard, handleLikeCard, h
   
   export function toggleLike(cardId, isLiked, likeCounter) {
     return isLiked ? unlikeCard(cardId) : likeCard(cardId);
+  }
+
+  export function confirmDelete(cardId, cardElement) {
+    return new Promise((resolve) => {
+      const handleConfirm = (evt) => {
+        evt.preventDefault();
+        confirmForm.removeEventListener('submit', handleConfirm);
+        resolve(true);
+        closeModal(confirmPopup);
+      };
+  
+      const handleCancel = () => {
+        confirmForm.removeEventListener('submit', handleConfirm);
+        resolve(false);
+        closeModal(confirmPopup);
+      };
+  
+      confirmForm.addEventListener('submit', handleConfirm);
+      confirmPopup.querySelector('.popup__close').addEventListener('click', handleCancel);
+      confirmPopup.addEventListener('mousedown', (evt) => {
+        if (evt.target === confirmPopup) handleCancel();
+      });
+  
+      openModal(confirmPopup);
+    });
+  }
+  
+  export function setupCardDelete(cardId, cardElement) {
+    confirmDelete(cardId, cardElement)
+      .then(confirmed => {
+        if (confirmed) {
+          return deleteCardApi(cardId)
+            .then(() => cardElement.remove())
+            .catch(err => {
+              console.error('Ошибка удаления карточки:', err);
+              throw err;
+            });
+        }
+      })
+      .catch(err => console.error('Ошибка:', err));
   }
