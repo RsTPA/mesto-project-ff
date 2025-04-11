@@ -32,6 +32,7 @@ const profileJobInput = profileForm.querySelector('.popup__input_type_descriptio
 const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
 const cardLinkInput = cardForm.querySelector('.popup__input_type_url');
 
+
 // Инициализация карточек
 function renderInitialCards() {
     initialCards.forEach(card => {
@@ -89,6 +90,23 @@ function setupEventListeners() {
     cardForm.addEventListener('submit', handleFormNewPlaceSubmit);
 }
 
+// Загрузка данных при запуске
+function loadInitialData() {
+    Promise.all([getUserInfo(), getInitialCards()])
+      .then(([userData, cards]) => {
+        updateProfileInfo(userData);
+        renderInitialCards(cards, userData._id);
+      })
+      .catch(console.error);
+  }
+  
+  // Обновление профиля
+  function updateProfileInfo(userData) {
+    profileNameElement.textContent = userData.name;
+    profileJobElement.textContent = userData.about;
+    profileAvatarElement.style.backgroundImage = `url(${userData.avatar})`;
+  }
+
 // Инициализация приложения
 function init() {
     renderInitialCards();
@@ -96,3 +114,16 @@ function init() {
 }
 
 init();
+
+// Валидация
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+  };
+  
+  // Инициализация валидации
+  enableValidation(validationConfig);
