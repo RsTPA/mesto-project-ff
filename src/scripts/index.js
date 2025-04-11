@@ -2,6 +2,8 @@ import '../pages/index.css';
 import { createCard } from './card.js';
 import { openModal, closeModal, handleOverlayClick } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
+import { ERROR_MESSAGES, DEFAULT_BUTTON_TEXTS } from './constants.js';
+import { setLoadingState } from './utils.js';
 import {
   getProfileInfo,
   getInitialCards,
@@ -90,23 +92,20 @@ function renderCard(cardData, container, method = 'append') {
 
 // Обработчики форм
 function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-  const submitButton = evt.submitter;
-  const initialText = submitButton.textContent;
-  
-  submitButton.textContent = 'Сохранение...';
-  
-  updateProfileInfo(profileNameInput.value, profileJobInput.value)
-    .then(userData => {
-      profileNameElement.textContent = userData.name;
-      profileJobElement.textContent = userData.about;
-      closeModal(editProfileModal);
-    })
-    .catch(err => console.error('Ошибка обновления профиля:', err))
-    .finally(() => {
-      submitButton.textContent = initialText;
-    });
-}
+    evt.preventDefault();
+    const submitButton = evt.submitter;
+    
+    setLoadingState(submitButton, true);
+    
+    updateProfileInfo(profileNameInput.value, profileJobInput.value)
+      .then(userData => {
+        updateProfileDisplay(userData);
+        closeModal(editProfileModal);
+      })
+      .catch(err => console.error(ERROR_MESSAGES.PROFILE_UPDATE, err))
+      .finally(() => setLoadingState(submitButton, false));
+  }
+
 
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
