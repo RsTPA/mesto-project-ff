@@ -40,7 +40,13 @@ export const addNewCard = (name, link) => {
     method: 'POST',
     headers: config.headers,
     body: JSON.stringify({ name, link })
-  }).then(checkResponse);
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error('Ошибка добавления карточки');
+    }
+    return res.json();
+  });
 };
 
 export const deleteCard = (cardId) => {

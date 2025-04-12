@@ -12,14 +12,12 @@ import {
   likeCard,
   unlikeCard
 } from './api.js';
-
 import { 
   ERROR_MESSAGES, 
   DEFAULT_BUTTON_TEXTS, 
   VALIDATION_CONFIG, 
   RENDER_METHODS 
 } from './constants.js';
-
 
 // DOM элементы
 const profileSection = document.querySelector('.profile');
@@ -54,46 +52,34 @@ const avatarLinkInput = avatarForm.querySelector('.popup__input_type_avatar-url'
 // Переменные состояния
 let currentUserId = null;
 
-// Универсальная функция изменения состояния кнопки
-function setButtonState(button, isLoading, text = '') {
-  button.textContent = isLoading ? DEFAULT_BUTTON_TEXTS.LOADING : text;
-  button.disabled = isLoading;
+// Обработчик открытия изображения
+function openImagePopup(cardData) {
+  const popupImage = imagePreviewModal.querySelector('.popup__image');
+  const popupCaption = imagePreviewModal.querySelector('.popup__caption');
+  
+  popupImage.src = cardData.link;
+  popupImage.alt = cardData.name;
+  popupCaption.textContent = cardData.name;
+  
+  openModal(imagePreviewModal);
 }
 
-// Обработчик ошибок API
-function handleApiError(error, defaultMessage) {
-  console.error(defaultMessage, error);
-  alert(defaultMessage);
+// Обработчик лайка карточки
+function handleLikeCard(cardId, isLiked, likeCounter, likeButton) {
+  const likeMethod = isLiked ? unlikeCard : likeCard;
+  likeMethod(cardId)
+    .then(updatedCard => {
+      likeCounter.textContent = updatedCard.likes.length;
+      likeButton.classList.toggle('card__like-button_is-active');
+    })
+    .catch(err => console.error('Ошибка при изменении лайка:', err));
 }
 
 // Обработчик удаления карточки
 function handleDeleteCard(cardId, cardElement) {
-  return deleteCardApi(cardId)
+  deleteCardApi(cardId)
     .then(() => cardElement.remove())
-    .catch(err => handleApiError(err, ERROR_MESSAGES.CARD_DELETE));
-}
-
-// Обработчик лайка карточки
-function handleLikeCard(cardId, isLiked, likeCounter) {
-  const likeMethod = isLiked ? unlikeCard : likeCard;
-  return likeMethod(cardId)
-    .then(updatedCard => {
-      likeCounter.textContent = updatedCard.likes.length;
-      return updatedCard;
-    })
-    .catch(err => handleApiError(err, ERROR_MESSAGES.LIKE));
-}
-
-// Обработчик открытия изображения
-function openImagePopup(cardData) {
-  const imageElement = imagePreviewModal.querySelector('.popup__image');
-  const captionElement = imagePreviewModal.querySelector('.popup__caption');
-  
-  imageElement.src = cardData.link;
-  imageElement.alt = cardData.name;
-  captionElement.textContent = cardData.name;
-  
-  openModal(imagePreviewModal);
+    .catch(err => console.error('Ошибка при удалении карточки:', err));
 }
 
 // Рендеринг карточки
@@ -101,20 +87,20 @@ function renderCard(cardData, container, method = RENDER_METHODS.APPEND) {
   const cardElement = createCard(
     cardData,
     currentUserId,
-    (cardId, element) => handleDeleteCard(cardId, element),
-    (cardId, isLiked, likeCounter) => handleLikeCard(cardId, isLiked, likeCounter),
-    (data) => openImagePopup(data)
+    handleDeleteCard,
+    handleLikeCard,
+    openImagePopup
   );
   
   container[method](cardElement);
 }
 
 // Обработчики форм
-function handleProfileFormSubmit(evt) {
+profileForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = evt.submitter;
   
-  setButtonState(submitButton, true);
+  submitButton.textContent = 'Сохранение...';
   
   updateProfileInfo(profileNameInput.value, profileJobInput.value)
     .then(userData => {
@@ -122,15 +108,20 @@ function handleProfileFormSubmit(evt) {
       profileJobElement.textContent = userData.about;
       closeModal(editProfileModal);
     })
-    .catch(err => handleApiError(err, ERROR_MESSAGES.PROFILE_UPDATE))
-    .finally(() => setButtonState(submitButton, false, DEFAULT_BUTTON_TEXTS.SAVE));
-}
+    .catch(err => {
+      console.error('Ошибка обновления профиля:', err);
+      alert('Не удалось обновить профиль');
+    })
+    .finally(() => {
+      submitButton.textContent = 'Сохранить';
+    });
+});
 
-function handleCardFormSubmit(evt) {
+cardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = evt.submitter;
   
-  setButtonState(submitButton, true, DEFAULT_BUTTON_TEXTS.CREATE);
+  submitButton.textContent = 'Создание...';
   
   addNewCard(cardNameInput.value, cardLinkInput.value)
     .then(newCard => {
@@ -139,15 +130,20 @@ function handleCardFormSubmit(evt) {
       closeModal(addCardModal);
       clearValidation(cardForm, VALIDATION_CONFIG);
     })
-    .catch(err => handleApiError(err, ERROR_MESSAGES.CARD_ADD))
-    .finally(() => setButtonState(submitButton, false, DEFAULT_BUTTON_TEXTS.CREATE));
-}
+    .catch(err => {
+      console.error('Ошибка добавления карточки:', err);
+      alert('Не удалось добавить карточку');
+    })
+    .finally(() => {
+      submitButton.textContent = 'Создать';
+    });
+});
 
-function handleAvatarFormSubmit(evt) {
+avatarForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = evt.submitter;
   
-  setButtonState(submitButton, true);
+  submitButton.textContent = 'Сохранение...';
   
   updateAvatar(avatarLinkInput.value)
     .then(userData => {
@@ -155,9 +151,14 @@ function handleAvatarFormSubmit(evt) {
       avatarForm.reset();
       closeModal(editAvatarModal);
     })
-    .catch(err => handleApiError(err, ERROR_MESSAGES.AVATAR_UPDATE))
-    .finally(() => setButtonState(submitButton, false, DEFAULT_BUTTON_TEXTS.SAVE));
-}
+    .catch(err => {
+      console.error('Ошибка обновления аватара:', err);
+      alert('Не удалось обновить аватар');
+    })
+    .finally(() => {
+      submitButton.textContent = 'Сохранить';
+    });
+});
 
 // Настройка обработчиков событий
 function setupEventListeners() {
@@ -190,11 +191,6 @@ function init() {
   enableValidation(VALIDATION_CONFIG);
   setupEventListeners();
 
-  // Назначение обработчиков форм
-  profileForm.addEventListener('submit', handleProfileFormSubmit);
-  cardForm.addEventListener('submit', handleCardFormSubmit);
-  avatarForm.addEventListener('submit', handleAvatarFormSubmit);
-
   // Загрузка начальных данных
   Promise.all([getProfileInfo(), getInitialCards()])
     .then(([userData, cards]) => {
@@ -207,7 +203,10 @@ function init() {
         renderCard(card, cardsContainer);
       });
     })
-    .catch(err => handleApiError(err, ERROR_MESSAGES.SERVER_ERROR));
+    .catch(err => {
+      console.error('Ошибка загрузки данных:', err);
+      alert('Не удалось загрузить данные');
+    });
 }
 
 init();

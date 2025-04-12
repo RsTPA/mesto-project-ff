@@ -38,7 +38,15 @@ export function createCard(cardData, userId, handleDeleteClick, handleLikeClick,
     handleLikeClick(cardData._id, isLiked, likeCounter, likeButton);
   });
 
-  cardImage.addEventListener('click', () => handleImageClick(cardData));
+  cardImage.addEventListener('click', () => {
+    if (typeof handleImageClick === 'function') {
+      handleImageClick({
+        name: cardData.name,
+        link: cardData.link
+      });
+    }
+  });
+  
 
   return cardElement;
 }
