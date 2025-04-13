@@ -1,7 +1,7 @@
-## Ссылка на GitHub Pages
+# Проектная работа Mesto
 
-[Открыть проект](https://rstpa.github.io/mesto-project-ff/)
+https://github.com/RsTPA/mesto-project-ff
 
-## Скриншоты
 
-![Главная страница](./screenshots/main.png)
+
+
