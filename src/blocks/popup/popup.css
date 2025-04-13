@@ -21,3 +21,24 @@
   right: 0;
   z-index: 10;
 }
+
+.popup__button_disabled {
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  cursor: default;
+}
+
+.popup__error {
+  min-height: 12px;
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 15px;
+  color: #ff0000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.popup__error_visible {
+  opacity: 1;
+}
