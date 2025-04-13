@@ -1,28 +1,3 @@
-# Зависимости
-node_modules/
-
-# Сборка
-dist/
+node_modules
+dist
 .DS_Store
-
-# Логи и кэш
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Редакторы
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Окружение
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local

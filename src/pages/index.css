@@ -11,3 +11,30 @@
 @import url('../blocks/popup/_is-animated/popup_is-animated.css');
 @import url('../blocks/popup/_is-opened/popup_is-opened.css');
 
+.page {
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: #000;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Добавьте остальные стили из вашего оригинального проекта */
+  
+  .popup__input_type_error {
+    border-bottom-color: #FF0000;
+  }
+  
+  .popup__error_visible {
+    opacity: 1;
+  }
+  
+  .popup__button_disabled {
+    background-color: #F8F8F8;
+    color: #C4C4C4;
+    pointer-events: none;
+  }
