@@ -26,13 +26,19 @@
   }
 }
 
-.popup__button_disabled {
-  background-color: #fff;
-  color: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  cursor: default;
+/* стили для неактивной кнопки */  
+.popup__button_disabled {  
+  border: 1px solid rgba(0, 0, 0, .2);
+  color: rgba(196, 196, 196, 1);
+  background: transparent;
+  pointer-events: none;
 }
 
-.popup__button_disabled:hover {
-  opacity: 1;
+/* при наведении на активную кнопку */  
+.popup__button:hover:not(.popup__button_disabled) {  
+  background: rgba(0, 0, 0, 0.8);  
+} 
+
+.popup__button_delete {
+  margin-top: 33px;
 }
