@@ -150,6 +150,7 @@ closeButtons.forEach(button => {
   });
 });
 
+
 // Закрытие попапов на оверлей
 const popups = document.querySelectorAll('.popup');
 popups.forEach(popup => {

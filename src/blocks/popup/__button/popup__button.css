@@ -42,3 +42,8 @@
 .popup__button_delete {
   margin-top: 33px;
 }
+
+.popup__button_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
